@@ -2,10 +2,12 @@
   "name": "store-outbox-connector",
   "config": {
     "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+
     "database.hostname": "mysql",
     "database.port": "3306",
     "database.user": "root",
     "database.password": "debezium",
+
     "database.server.id": "184054",
     "database.server.name": "dbserver1",
 
@@ -18,13 +20,22 @@
     "snapshot.mode": "initial",
     "snapshot.locking.mode": "none",
 
-    "transforms": "outbox,key",
+    "transforms": "unwrap,extractKey,route",
 
-    "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
-    "transforms.outbox.route.topic.replacement": "stock_updates",
-    "transforms.outbox.table.fields.additional.placement": "store_id:header:store_id,sku:header:sku,quantity:header:quantity",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.drop.tombstones": "true",
+    "transforms.unwrap.delete.handling.mode": "drop",
 
-    "transforms.key.type": "org.apache.kafka.connect.transforms.ValueToKey",
-    "transforms.key.fields": "store_id,sku"
+    "transforms.extractKey.type": "org.apache.kafka.connect.transforms.ValueToKey",
+    "transforms.extractKey.fields": "store_id,sku",
+
+    "transforms.route.type": "org.apache.kafka.connect.transforms.RegexRouter",
+    "transforms.route.regex": "dbserver1.inventory.outbox_event",
+    "transforms.route.replacement": "stock_updates",
+
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false"
   }
 }
