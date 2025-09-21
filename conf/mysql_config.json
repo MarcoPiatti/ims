@@ -1,0 +1,30 @@
+{
+  "name": "store-outbox-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+    "database.hostname": "mysql",
+    "database.port": "3306",
+    "database.user": "root",
+    "database.password": "debezium",
+    "database.server.id": "184054",
+    "database.server.name": "dbserver1",
+
+    "database.include.list": "inventory",
+    "table.include.list": "inventory.outbox_event",
+
+    "database.history.kafka.bootstrap.servers": "kafka:9092",
+    "database.history.kafka.topic": "schema-changes.inventory",
+
+    "snapshot.mode": "initial",
+    "snapshot.locking.mode": "none",
+
+    "transforms": "outbox,key",
+
+    "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
+    "transforms.outbox.route.topic.replacement": "stock_updates",
+    "transforms.outbox.table.fields.additional.placement": "store_id:header:store_id,sku:header:sku,quantity:header:quantity",
+
+    "transforms.key.type": "org.apache.kafka.connect.transforms.ValueToKey",
+    "transforms.key.fields": "store_id,sku"
+  }
+}
