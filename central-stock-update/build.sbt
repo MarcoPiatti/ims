@@ -1,12 +1,14 @@
-version := "0.1.0-SNAPSHOT"
-scalaVersion := "3.7.3"
+
+
+ThisBuild / version := "0.1.0-SNAPSHOT"
+
+ThisBuild / scalaVersion := "3.7.3"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "store-stock-update",
-    idePackagePrefix := Some("ims.store")
+    name := "central-stock-update",
+    idePackagePrefix := Some("ims.central.update")
   )
-
 
 assembly / assemblyMergeStrategy := {
   case PathList("META-INF", "maven", "org.webjars", "swagger-ui", "pom.properties") => MergeStrategy.singleOrError
