@@ -1,7 +1,6 @@
-version: '2'
 services:
   mysql:
-    image: debezium/example-mysql:1.8
+    image: mysql:8.0
     container_name: mysql
     hostname: mysql
     ports:
@@ -10,7 +9,6 @@ services:
       MYSQL_ROOT_PASSWORD: debezium
       MYSQL_USER: mysqluser
       MYSQL_PASSWORD: mysqlpw
-      MYSQL_DATABASE: inventory
     volumes:
       - ./conf/store_schema.sql:/docker-entrypoint-initdb.d/store_schema.sql
 
@@ -24,7 +22,6 @@ services:
       MYSQL_ROOT_PASSWORD: centralpw
       MYSQL_USER: centraluser
       MYSQL_PASSWORD: centralpw
-      MYSQL_DATABASE: inventory
     volumes:
       - ./conf/central_schema.sql:/docker-entrypoint-initdb.d/central_schema.sql
 
@@ -68,11 +65,10 @@ services:
     container_name: kafka-connect
     hostname: kafka-connect
     image: debezium/connect:1.8
+    depends_on:
+      - mysql
     ports:
       - '8083:8083'
-    links:
-      - kafka
-      - zookeeper
     environment:
       - BOOTSTRAP_SERVERS=kafka:9092
       - GROUP_ID=medium_debezium
@@ -101,3 +97,13 @@ services:
         done
         echo -e "Sending connector"
         curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" kafka-connect:8083/connectors/ -d @/conf/mysql_config.json
+
+  store-stock-update:
+    build:
+      context: ./store-stock-update
+    container_name: store-stock-update
+    hostname: store-stock-update
+    depends_on:
+      - mysql
+    ports:
+      - '9290:9290'

@@ -1,0 +1,17 @@
+*.class
+*.log
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+logs
+target
+/.g8
+/.idea
+/.idea_modules
+/.classpath
+/.project
+/.settings
+/.bsp
+/RUNNING_PID
+**/.scannerwork
+/environment-override.conf

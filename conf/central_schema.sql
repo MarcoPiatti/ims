@@ -1,3 +1,7 @@
+create database if not exists inventory;
+
+use inventory;
+
 create table if not exists stock (
     sku varchar(255) not null,
     store_id int not null,

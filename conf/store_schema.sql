@@ -1,13 +1,16 @@
+create database if not exists inventory;
+
+use inventory;
+
 create table if not exists stock (
     sku varchar(255) not null primary key,
     quantity int not null
 );
 
 create table if not exists outbox_event (
-    id BIGINT not null auto_increment primary key,
-    aggregate_type varchar(255) not null,
-    aggregate_id varchar(255) not null,
-    type varchar(255) not null,
-    payload JSON not null,
+    id bigint not null auto_increment primary key,
+    store_id int not null,
+    sku varchar(255) not null,
+    quantity int not null,
     created_at timestamp not null default current_timestamp
 );
