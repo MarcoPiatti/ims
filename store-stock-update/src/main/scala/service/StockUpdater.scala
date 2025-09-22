@@ -21,6 +21,8 @@ object StockUpdater:
         newQuantity = quantity + stock.quantity
         result <- if newQuantity >= 0
                     then Queries.updateStock(storeId, stock.sku, newQuantity).map(Right(_))
-                    else ApiError.of(s"Not enough stock. Quantity: $quantity, attempted removal: ${stock.quantity}").pure[ConnectionIO]
+                    else ApiError
+                      .of(s"Not enough stock. Quantity: $quantity, attempted removal: ${stock.quantity}")
+                      .pure[ConnectionIO]
       yield result
     flow.transact(transactor)
