@@ -3,19 +3,19 @@ package kafka
 
 import config.KafkaConfig
 
-import cats.effect.{IO, Resource}
-import doobie.implicits.*
+import cats.effect.IO
 import doobie.util.transactor.Transactor
 import fs2.kafka.*
-import fs2.kafka.consumer.KafkaConsumeChunk.CommitNow
-import fs2.{Chunk, Stream}
 import io.circe.Decoder
+import io.circe.derivation.Configuration
+import io.circe.generic.auto.*
 import io.circe.parser.decode
 
 def circeDeserializer[A: Decoder]: Deserializer[IO, A] =
+  given Configuration = Configuration.default.withSnakeCaseMemberNames
   Deserializer.string[IO].map(decode[A]).flatMap {
     case Right(data) => Deserializer.const(data)
-    case Left(err)   => Deserializer.fail(s"Failed to decode event: ${err.getMessage}")
+    case Left(err)   => Deserializer.fail(err)
   }
 
 object StockUpdatesConsumer:
@@ -23,10 +23,12 @@ object StockUpdatesConsumer:
             transactor: Transactor[IO],
             chunkProcessor: StockUpdateChunkProcessor
             ): IO[Nothing] =
-    val consumerSettings = ConsumerSettings(circeDeserializer[StockUpdateKey], circeDeserializer[StockUpdateData])
+    val consumerSettings: ConsumerSettings[IO, StockUpdateKey, StockUpdateData] = 
+      ConsumerSettings(circeDeserializer[StockUpdateKey], circeDeserializer[StockUpdateData])
       .withBootstrapServers(kafkaConfig.bootstrapServers)
       .withGroupId(kafkaConfig.groupId)
       .withAutoOffsetReset(AutoOffsetReset.Earliest)
+    
     KafkaConsumer.stream(consumerSettings)
       .subscribeTo(kafkaConfig.topic)
-      .consumeChunk(chunkProcessor)
+      .consumeChunk(chunkProcessor.processChunk)

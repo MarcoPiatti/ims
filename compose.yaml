@@ -107,3 +107,12 @@ services:
       - mysql
     ports:
       - '9290:9290'
+
+  central-stock-update:
+    build:
+      context: ./central-stock-update
+    container_name: central-stock-update
+    hostname: central-stock-update
+    depends_on:
+      - kafka
+      - mysql-central

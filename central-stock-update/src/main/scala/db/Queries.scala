@@ -1,26 +1,25 @@
 package ims.central.update
 package db
 
-import cats.free.Free
+import cats.implicits.catsSyntaxApplicativeId
 import doobie.*
 import doobie.implicits.*
-import doobie.mysql._
 
 object Queries {
-  def addStock(storeId: Int, sku: String, id: Int, addedQuantity: Int, createdAt: String): ConnectionIO[Unit] =
+  def updateStock(storeId: Int, sku: String, id: Int, quantity: Int, createdAt: String): ConnectionIO[Unit] =
     val query = for
       _ <- sql"""
-        INSERT INTO transactions (sku, store_id, id, quantity, created_at)
-        VALUES ($sku, $storeId, $id, $addedQuantity, $createdAt)
+        insert into transactions (sku, store_id, id, quantity, created_at)
+        values ($sku, $storeId, $id, $quantity, $createdAt)
       """.update.run
-      
+
       _ <- sql"""
-        INSERT INTO stock (sku, store_id, quantity) VALUES ($sku, $storeId, $addedQuantity)
-        ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)
+        insert into stock (sku, store_id, quantity) values ($sku, $storeId, $quantity)
+        on duplicate key update quantity = VALUES(quantity)
       """.update.run
     yield ()
-    
+
     query.exceptSomeSqlState {
-      case "23000" => Free.pure(())
+      case SqlState("23000") => ().pure
     }
 }
