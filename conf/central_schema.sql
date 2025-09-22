@@ -3,9 +3,10 @@ create database if not exists inventory;
 use inventory;
 
 create table if not exists stock (
-    sku varchar(255) not null,
     store_id int not null,
-    quantity int not null
+    sku varchar(255) not null,
+    quantity int not null,
+    primary key (store_id, sku)
 );
 
 create table if not exists transactions (
@@ -13,6 +14,6 @@ create table if not exists transactions (
     sku varchar(255) not null,
     id int not null,
     quantity int not null,
-    created_at timestamp not null,
+    created_at varchar(255) not null,
     primary key (store_id, sku, id)
 );
