@@ -1,19 +1,21 @@
 package ims.store
 package db
 
-import domain.Stock
+import domain.StockUpdate
 
 import doobie.*
 import doobie.implicits.*
 
 object Queries {
-  def addStock(storeId: Int, sku: String, addedQuantity: Int): ConnectionIO[Stock] =
+  def stock(sku: String): ConnectionIO[Int] =
+    sql"select quantity from stock where sku = $sku".query[Int].option.map(_.getOrElse(0))
+
+  def updateStock(storeId: Int, sku: String, quantity: Int): ConnectionIO[StockUpdate] =
     for {
       _ <- sql"""
-           insert into stock (sku, quantity) values ($sku, $addedQuantity)
-           on duplicate key update quantity = quantity + VALUES(quantity)
-           """.update.run
-      newQuantity <- sql"select quantity from stock where sku = $sku".query[Int].unique
-      _ <- sql"insert into outbox_event (store_id, sku, quantity) values ($storeId, $sku, $addedQuantity)".update.run
-    } yield Stock(sku, newQuantity)
+        insert into stock (sku, quantity) values ($sku, $quantity)
+        on duplicate key update quantity = VALUES(quantity)
+      """.update.run
+      _ <- sql"insert into outbox_event (store_id, sku, quantity) values ($storeId, $sku, $quantity)".update.run
+    } yield StockUpdate(sku, quantity)
 }

@@ -2,17 +2,27 @@ package ims.store
 package service
 
 import db.Queries
-import domain.Stock
+import domain.StockUpdate
 
 import cats.effect.IO
+import cats.free.Free
+import cats.implicits.catsSyntaxApplicativeId
 import doobie.*
 import doobie.implicits.*
+import cats.syntax.*
+import ims.store.api.ApiError
 
 trait StockUpdater:
-  def apply(stock: Stock): IO[Either[Unit, Stock]]
+  def apply(stock: StockUpdate): IO[Either[ApiError, StockUpdate]]
 
 object StockUpdater:
-  def apply(storeId: Int, transactor: Transactor[IO]): StockUpdater = (stock: Stock) => Queries
-    .addStock(storeId, stock.sku, stock.quantity)
-    .transact(transactor)
-    .map(Right(_))
+  def apply(storeId: Int, transactor: Transactor[IO]): StockUpdater = (stock: StockUpdate) =>
+    val flow =
+      for
+        quantity <- Queries.stock(stock.sku)
+        newQuantity = quantity + stock.quantity
+        result <- if newQuantity >= 0 
+                    then Queries.updateStock(storeId, stock.sku, newQuantity).map(Right(_))
+                    else ApiError.of(s"Not enough stock. Quantity: $quantity, attempted removal: ${stock.quantity}").pure[ConnectionIO]
+      yield result
+    flow.transact(transactor)
