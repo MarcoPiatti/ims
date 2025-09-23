@@ -20,7 +20,7 @@
     "snapshot.mode": "initial",
     "snapshot.locking.mode": "none",
 
-    "transforms": "unwrap",
+    "transforms": "unwrap,route,extractKey",
 
     "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
     "transforms.unwrap.drop.tombstones": "true",

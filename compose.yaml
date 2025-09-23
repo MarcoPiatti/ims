@@ -120,7 +120,7 @@ services:
     depends_on:
       - mysql
     ports:
-      - '9290:9290'
+      - '9300:9290'
 
   central-stock-update:
     build:
@@ -130,3 +130,13 @@ services:
     depends_on:
       - kafka
       - mysql-central
+
+  central-query-service:
+    build:
+      context: ./central-query-service
+    container_name: central-query-service
+    hostname: central-query-service
+    depends_on:
+      - mysql-central
+    ports:
+      - '9301:9290'
