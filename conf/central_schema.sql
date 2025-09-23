@@ -6,6 +6,7 @@ create table if not exists stock (
     store_id int not null,
     sku varchar(255) not null,
     quantity int not null,
+    last_updated timestamp not null,
     primary key (store_id, sku)
 );
 
