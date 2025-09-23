@@ -4,7 +4,7 @@ import api.Api
 import config.Config
 import db.Db
 import server.{Routes, Server}
-import service.StockUpdater
+import service.{Heartbeat, StockUpdater}
 
 import cats.effect.*
 import org.typelevel.log4cats.Logger
@@ -18,7 +18,8 @@ object Main extends IOApp.Simple:
     val config = Config.load()
     val app = 
       for transactor <- Db.transactor(config.db)
-          stockUpdater = StockUpdater(config.storeId, transactor)
+          _ <- Heartbeat.start(config.heartbeat.interval, config.store.id, transactor)
+          stockUpdater = StockUpdater(config.store.id, transactor)
           apiEndpoints = Api.endpoints(stockUpdater)
           routes = Routes.all(apiEndpoints)
           server <- Server(config.server, routes)

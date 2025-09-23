@@ -1,0 +1,41 @@
+{
+  "name": "store-availability-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+
+    "database.hostname": "mysql",
+    "database.port": "3306",
+    "database.user": "root",
+    "database.password": "debezium",
+
+    "database.server.id": "184055",
+    "database.server.name": "dbserver2",
+
+    "database.include.list": "inventory",
+    "table.include.list": "inventory.store_availability",
+
+    "database.history.kafka.bootstrap.servers": "kafka:9092",
+    "database.history.kafka.topic": "schema-changes.inventory",
+
+    "snapshot.mode": "initial",
+    "snapshot.locking.mode": "none",
+
+    "transforms": "unwrap,route,extractKey",
+
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.drop.tombstones": "true",
+    "transforms.unwrap.delete.handling.mode": "drop",
+
+    "transforms.extractKey.type": "org.apache.kafka.connect.transforms.ValueToKey",
+    "transforms.extractKey.fields": "store_id",
+
+    "transforms.route.type": "org.apache.kafka.connect.transforms.RegexRouter",
+    "transforms.route.regex": "dbserver2.inventory.store_availability",
+    "transforms.route.replacement": "store_availability",
+
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false"
+  }
+}

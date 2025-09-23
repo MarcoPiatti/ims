@@ -17,3 +17,8 @@ create table if not exists transactions (
     created_at varchar(255) not null,
     primary key (store_id, sku, id)
 );
+
+create table store_availability (
+    store_id int primary key,
+    last_check timestamp not null
+);

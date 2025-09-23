@@ -14,3 +14,8 @@ create table if not exists outbox_event (
     quantity int not null,
     created_at timestamp not null default current_timestamp
 );
+
+create table store_availability (
+    store_id int primary key,
+    last_check timestamp not null
+);

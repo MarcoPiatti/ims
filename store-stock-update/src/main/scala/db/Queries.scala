@@ -3,6 +3,7 @@ package db
 
 import domain.StockUpdate
 
+import cats.implicits.toFunctorOps
 import doobie.*
 import doobie.implicits.*
 
@@ -18,4 +19,10 @@ object Queries {
       """.update.run
       _ <- sql"insert into outbox_event (store_id, sku, quantity) values ($storeId, $sku, $quantity)".update.run
     } yield StockUpdate(sku, quantity)
+
+  def sendHeartbeat(storeId: Int): ConnectionIO[Unit] =
+    sql"""
+      insert into heartbeat (store_id) values ($storeId)
+      on duplicate key update last_heartbeat = current_timestamp
+    """.update.run.void
 }
