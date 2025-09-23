@@ -11,7 +11,6 @@ import fs2.kafka.consumer.KafkaConsumeChunk.CommitNow
 import io.circe.Decoder
 import io.circe.derivation.Configuration
 import io.circe.parser.decode
-import org.apache.kafka.common.config.TopicConfig
 
 def circeDeserializer[A: Decoder]: Deserializer[IO, A] =
   given Configuration = Configuration.default.withSnakeCaseMemberNames
@@ -30,5 +29,5 @@ object Kafka:
       .withAutoOffsetReset(AutoOffsetReset.Earliest)
     
     KafkaConsumer.stream(consumerSettings)
-      .subscribeTo(config.stockUpdateTopic, config.heartbeatTopic)
+      .subscribeTo(config.topic)
       .consumeChunk(processor)

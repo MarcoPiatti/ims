@@ -26,10 +26,9 @@ case class DbConfig(host: Host,
 case class KafkaConfig(stockUpdates: KafkaTopicConfig, heartbeat: KafkaTopicConfig)
 
 case class KafkaTopicConfig(bootstrapServers: String,
-                       stockUpdateTopic: String,
-                       heartbeatTopic: String,
-                       groupId: String,
-                       autoOffsetReset: String)
+                            topic: String,
+                            groupId: String,
+                            autoOffsetReset: String)
 
 object Config:
   def load(): Config = ConfigSource.default.loadOrThrow[Config]
