@@ -23,9 +23,12 @@ case class DbConfig(host: Host,
                     user: Sensitive,
                     password: Sensitive)
 
-case class KafkaConfig(bootstrapServers: String, 
-                       topic: String, 
-                       groupId: String, 
+case class KafkaConfig(stockUpdates: KafkaTopicConfig, heartbeat: KafkaTopicConfig)
+
+case class KafkaTopicConfig(bootstrapServers: String,
+                       stockUpdateTopic: String,
+                       heartbeatTopic: String,
+                       groupId: String,
                        autoOffsetReset: String)
 
 object Config:

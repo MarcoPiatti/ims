@@ -1,6 +1,7 @@
 package ims.central.update
 package db
 
+import cats.implicits.toFunctorOps
 import cats.implicits.catsSyntaxApplicativeId
 import doobie.*
 import doobie.implicits.*
@@ -22,4 +23,10 @@ object Queries {
     query.exceptSomeSqlState {
       case SqlState("23000") => ().pure
     }
+
+  def updateHeartbeat(storeId: Int, timestamp: String): ConnectionIO[Unit] =
+    sql"""
+      insert into heartbeat (store_id, last_heartbeat) values ($storeId, $timestamp)
+      on duplicate key update last_heartbeat = $timestamp
+    """.update.run.void
 }

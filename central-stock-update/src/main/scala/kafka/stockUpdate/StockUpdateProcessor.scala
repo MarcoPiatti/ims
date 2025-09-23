@@ -1,5 +1,5 @@
 package ims.central.update
-package kafka
+package kafka.stockUpdate
 
 import db.Queries
 
@@ -21,7 +21,7 @@ object StockUpdateProcessor:
     val data = event.value
     for 
       result <- Queries
-      .updateStock(data.store_id, data.sku, data.id, data.quantity, data.created_at)
-      .transact(transactor)
+        .updateStock(data.store_id, data.sku, data.id, data.quantity, data.created_at)
+        .transact(transactor)
       _ <- info"Processed stock update event $event"
     yield result

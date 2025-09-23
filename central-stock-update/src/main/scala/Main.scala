@@ -2,20 +2,30 @@ package ims.central.update
 
 import config.Config
 import db.Db
-import kafka.{StockUpdateChunkProcessor, StockUpdateProcessor, StockUpdatesConsumer}
+import kafka.heartbeat.HeartbeatProcessor
+import kafka.stockUpdate.{StockUpdateData, StockUpdateKey, StockUpdateProcessor}
+import kafka.{ChunkProcessor, Kafka}
 
-import cats.effect.{IO, IOApp}
+import cats.effect.{ExitCode, IO, IOApp}
+import io.circe.generic.auto.*
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-
 
 object Main extends IOApp.Simple:
   given Logger[IO] = Slf4jLogger.getLogger
 
   def run: IO[Unit] =
     val config = Config.load()
-    Db.transactor(config.db).use { transactor =>
-      val stockUpdateProcessor = StockUpdateProcessor(transactor)
-      val stockUpdateChunkProcessor = StockUpdateChunkProcessor(stockUpdateProcessor)
-      StockUpdatesConsumer(config.kafka, transactor, stockUpdateChunkProcessor)
-    }
+    val app =
+      for 
+        transactor <- Db.transactor(config.db)
+        
+        stockUpdateChunkProcessor = ChunkProcessor.last(StockUpdateProcessor(transactor).process)
+        stockUpdateConsumer = Kafka.chunkConsumer(config.kafka.stockUpdates, stockUpdateChunkProcessor)
+      
+        heartbeatChunkProcessor = ChunkProcessor.last(HeartbeatProcessor(transactor).process)
+        heartbeatConsumer = Kafka.chunkConsumer(config.kafka.heartbeat, heartbeatChunkProcessor)
+      
+        _ <- (stockUpdateConsumer, heartbeatConsumer).parTupled.background
+      yield ()
+    app.useForever.as(ExitCode.Success)  
