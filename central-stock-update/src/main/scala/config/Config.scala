@@ -13,8 +13,7 @@ case class Sensitive(value: String) extends AnyVal {
   override def toString: String = "*****"
 }
 
-case class Config(storeId: Int,
-                  db: DbConfig,
+case class Config(db: DbConfig,
                   kafka: KafkaConfig) derives ConfigReader
 
 case class DbConfig(host: Host,
