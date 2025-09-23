@@ -22,7 +22,7 @@ object Queries {
 
   def sendHeartbeat(storeId: Int): ConnectionIO[Unit] =
     sql"""
-      insert into heartbeat (store_id, last_heartbeat) values ($storeId, current_timestamp)
-      on duplicate key update last_heartbeat = current_timestamp
+      insert into store_availability (store_id, last_check) values ($storeId, current_timestamp)
+      on duplicate key update last_check = current_timestamp
     """.update.run.void
 }

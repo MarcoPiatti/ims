@@ -6,6 +6,8 @@ import cats.implicits.catsSyntaxApplicativeId
 import doobie.*
 import doobie.implicits.*
 
+import java.time.Instant
+
 object Queries {
   def updateStock(storeId: Int, sku: String, id: Int, quantity: Int, createdAt: String): ConnectionIO[Unit] =
     val query = for
@@ -24,9 +26,10 @@ object Queries {
       case SqlState("23000") => ().pure
     }
 
-  def updateHeartbeat(storeId: Int, timestamp: String): ConnectionIO[Unit] =
+  def updateHeartbeat(storeId: Int, timestamp: Instant): ConnectionIO[Unit] =
+    val ts = java.sql.Timestamp.from(timestamp)
     sql"""
-      insert into heartbeat (store_id, last_heartbeat) values ($storeId, $timestamp)
-      on duplicate key update last_heartbeat = $timestamp
+      insert into store_availability (store_id, last_check) values ($storeId, $ts)
+      on duplicate key update last_check = $ts
     """.update.run.void
 }

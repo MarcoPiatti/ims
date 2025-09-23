@@ -23,5 +23,5 @@ object HeartbeatProcessor:
       result <- Queries
         .updateHeartbeat(data.store_id, data.last_check)
         .transact(transactor)
-      _ <- info"Processed stock update event $event"
+      _ <- info"Processed kafka event $event"
     yield result
