@@ -60,6 +60,8 @@ a confirmation is sent back to the central service when stock has been properly 
 
 - The central system should be up to date with the local stores as fast as possible, without impacting on the operation.
   - A message broker is used to stream local updates to the central system.
+  - The Kafka topic is partitioned by store ID and SKU, ensuring that each store's updates are processed in order.
+  - at-least-once delivery and idempotent DB operations are used to ensure no data is lost and no duplicates are created.
 
 
 - The stock synchronization should be reliable and fault tolerant.
