@@ -3,6 +3,7 @@
 ------
 
 Docker Engine must be installed on your machine.
+
 Then you can run the following command under this working directory:
 
 ```bash
@@ -17,7 +18,7 @@ To stop all containers:
 docker compose down
 ```
 
-To check the health and logs of your containers:
+To check the health and logs of the containers:
 
 ```bash
 docker compose ps
@@ -29,24 +30,19 @@ docker compose logs <service-name>
 
 If a service is not healthy, check its logs and ensure the healthcheck endpoint is returning HTTP 200 OK.
 
-You can check the store service API docs at:
+You can check the store service API docs at: http://localhost:9300/docs
 
-    http://localhost:9300/docs
-
-And the central service API docs at:
-
-    http://localhost:9301/docs
+And the central service API docs at: http://localhost:9301/docs
 
 -----
 ### Kafka
-You can view information on kafka-ui at:
-
-    http://localhost:8080
+You can view information on kafka-ui at: http://localhost:8080
 
 -----
 ### Databases
 
 Having the mysql client installed.
+
 You can access the local store database remotely with the following command:
 
 ```bash
