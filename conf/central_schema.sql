@@ -24,7 +24,7 @@ create table if not exists reservations (
     store_id int not null,
     sku varchar(255) not null,
     quantity int not null,
-    status enum('PENDING', 'COMPLETED', 'CANCELLED') not null,
+    status enum('PENDING', 'CONFIRMED', 'CANCELLED') not null,
     created_at timestamp not null default current_timestamp
 );
 
