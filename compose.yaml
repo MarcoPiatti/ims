@@ -81,12 +81,6 @@ services:
       - SCHEMA_REGISTRY_LISTENERS=http://schema-registry:8081
     ports:
       - '8081:8081'
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/subjects"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
     depends_on:
       kafka:
         condition: service_healthy
@@ -171,11 +165,6 @@ services:
         condition: service_healthy
     ports:
       - '9300:9290'
-    healthcheck:
-      test: ["CMD", "curl", "-fsSL", "http://localhost:9290/health-check"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   central-stock-update:
     build:
@@ -201,8 +190,3 @@ services:
         condition: service_healthy
     ports:
       - '9301:9290'
-    healthcheck:
-      test: ["CMD", "curl", "-fsSL", "http://localhost:9290/health-check"]
-      interval: 10s
-      timeout: 5s
-      retries: 5

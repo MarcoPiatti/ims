@@ -16,7 +16,7 @@ object Routes:
   private case class HealthStatus(status: String)
 
   def all(endpoints: List[ServerEndpoint[Any,IO]]): HttpApp[IO] =
-    val swagger = SwaggerInterpreter().fromServerEndpoints(endpoints, "Store Stock Update Service", "1.0")
+    val swagger = SwaggerInterpreter().fromServerEndpoints(endpoints, "Central Query Service", "1.0")
     val swaggerRoute = Http4sServerInterpreter[IO]().toRoutes(swagger)
     val apiRoutes = Http4sServerInterpreter[IO]().toRoutes(endpoints)
 

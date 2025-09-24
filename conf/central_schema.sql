@@ -28,7 +28,7 @@ create table if not exists reservations (
     created_at timestamp not null default current_timestamp
 );
 
-create table store_availability (
+create table if not exists store_availability (
     store_id int primary key,
     last_check timestamp not null
 );
