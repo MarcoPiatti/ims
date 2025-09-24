@@ -13,6 +13,7 @@ import fs2.Stream
 import fs2.kafka.*
 import fs2.kafka.instances.fs2KafkaTopicPartitionOrder
 import io.circe.generic.auto.*
+import org.apache.kafka.clients.admin.NewTopic
 import org.apache.kafka.common.TopicPartition
 import org.apache.kafka.common.utils.Utils
 import org.typelevel.log4cats.Logger
@@ -43,6 +44,7 @@ object ReservationStreaming:
   private def fetchPartitionCount(cfg: KafkaTopicConfig): IO[Int] =
     val adminSettings = AdminClientSettings(cfg.bootstrapServers)
     KafkaAdminClient.resource(adminSettings).use { admin =>
+      admin.createTopic(NewTopic("pending_reservations", 32, 1.toShort)).attempt.void *>
       admin.describeTopics(List(cfg.topic)).flatMap { metaMap =>
         metaMap.get(cfg.topic) match
           case Some(desc) => IO.pure(desc.partitions.size)

@@ -121,7 +121,6 @@ services:
     depends_on:
       - mysql
       - kafka
-      - kafka-init
     ports:
       - '9300:9290'
 
@@ -144,20 +143,3 @@ services:
       - kafka
     ports:
       - '9301:9290'
-        
-  kafka-init:
-    image: confluentinc/cp-kafka:5.5.3
-    depends_on:
-      - kafka
-    entrypoint: [ "/bin/sh", "-c" ]
-    command: |
-      "
-      # Wait for Kafka
-      cub kafka-ready -b kafka:9092 1 20
-      # Create the topic
-      kafka-topics --create --if-not-exists \
-        --zookeeper zookeeper:2181 \
-        --replication-factor 1 \
-        --partitions 1 \
-        --topic pending_reservations
-      "

@@ -17,7 +17,7 @@ trait ReservationPersistor:
   def apply(stock: ReservationRequest): IO[Either[ApiError, ReservationResponse]]
 
 object ReservationPersistor:
-  def apply(minimumStock: Int, 
+  def apply(minimumStock: Int,
             transactor: Transactor[IO],
             kafkaSender: KafkaSender[ReservationKey, ReservationData]
            ): ReservationPersistor = (request: ReservationRequest) =>
@@ -29,11 +29,11 @@ object ReservationPersistor:
         )
         id <- EitherT.right(Queries.createReservation(request.storeId, request.sku, request.quantity, PENDING))
       yield ReservationResponse(id, PENDING)
-    
-    val flow = for 
+
+    val flow = for
       reservationResponse <- transaction.transact(transactor)
       _ <- EitherT.right(kafkaSender.send(
-        ReservationKey(reservationResponse.id), 
+        ReservationKey(request.storeId),
         ReservationData(reservationResponse.id, request.storeId, request.sku, request.quantity)
       ))
     yield reservationResponse
