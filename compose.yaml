@@ -67,6 +67,7 @@ services:
     image: debezium/connect:1.8
     depends_on:
       - mysql
+      - kafka
     ports:
       - '8083:8083'
     environment:
@@ -119,6 +120,7 @@ services:
     hostname: store-stock-update
     depends_on:
       - mysql
+      - kafka
     ports:
       - '9300:9290'
 
@@ -138,5 +140,6 @@ services:
     hostname: central-query-service
     depends_on:
       - mysql-central
+      - kafka
     ports:
       - '9301:9290'

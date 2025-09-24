@@ -28,6 +28,7 @@
 
     "transforms.extractKey.type": "org.apache.kafka.connect.transforms.ValueToKey",
     "transforms.extractKey.fields": "store_id",
+    "include.schema.changes": "false",
 
     "transforms.route.type": "org.apache.kafka.connect.transforms.RegexRouter",
     "transforms.route.regex": "dbserver2.inventory.store_availability",

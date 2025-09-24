@@ -21,6 +21,7 @@
     "snapshot.locking.mode": "none",
 
     "transforms": "unwrap,route,extractKey",
+    "include.schema.changes": "false",
 
     "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
     "transforms.unwrap.drop.tombstones": "true",

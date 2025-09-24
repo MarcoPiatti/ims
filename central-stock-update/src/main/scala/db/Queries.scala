@@ -19,7 +19,7 @@ object Queries {
 
       _ <- sql"""
         insert into stock (sku, store_id, quantity, last_updated) values ($sku, $storeId, $quantity, $createdAt)
-        on duplicate key update quantity = VALUES(quantity) and last_updated = VALUES(last_updated)
+        on duplicate key update quantity = $quantity, last_updated = $createdAt
       """.update.run
     yield ()
 

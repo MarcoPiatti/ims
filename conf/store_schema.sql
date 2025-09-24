@@ -19,3 +19,10 @@ create table store_availability (
     store_id int primary key,
     last_check timestamp not null
 );
+
+insert into store_availability (store_id, last_check) values (1, current_timestamp);
+insert into stock (sku, quantity)
+values ('SKU-1', 100), ('SKU-2', 150), ('SKU-3', 200);
+
+insert into outbox_event (store_id, sku, quantity)
+values (1, 'SKU-1', 100), (1, 'SKU-2', 150), (1, 'SKU-3', 200);
