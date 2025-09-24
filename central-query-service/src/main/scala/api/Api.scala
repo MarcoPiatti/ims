@@ -1,8 +1,8 @@
 package ims.central.query
 package api
 
-import domain.{Stock, StockQuery, StockResponse}
-import service.StockQueryService
+import domain.{ReservationRequest, ReservationResponse, Stock, StockQuery, StockResponse}
+import service.{ReservationPersistor, StockQueryService}
 
 import cats.effect.IO
 import io.circe.generic.auto.*
@@ -16,8 +16,8 @@ object ApiError:
   def of[A](message: String): Either[ApiError, A] = Left(ApiError(message))
 
 object Api:
-  def endpoints(stockQueryService: StockQueryService): List[ServerEndpoint[Any, IO]] =
-    val postStock = endpoint.get.in("stock")
+  def endpoints(stockQueryService: StockQueryService, reservationPersistor: ReservationPersistor): List[ServerEndpoint[Any, IO]] =
+    val getStock = endpoint.get.in("stock")
       .in(queryParams)
       .out(jsonBody[Seq[StockResponse]])
       .errorOut(jsonBody[ApiError])
@@ -28,5 +28,11 @@ object Api:
         )
         stockQueryService(query)
       )
+
+    val reserveStock = endpoint.post.in("reservation")
+      .in(jsonBody[ReservationRequest])
+      .out(jsonBody[ReservationResponse])
+      .errorOut(jsonBody[ApiError])
+      .serverLogic(reservationPersistor(_))
     
-    List(postStock)
+    List(getStock)

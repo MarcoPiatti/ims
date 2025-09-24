@@ -19,6 +19,15 @@ create table if not exists transactions (
     primary key (store_id, sku, id)
 );
 
+create table if not exists reservations (
+    id bigint not null auto_increment primary key,
+    store_id int not null,
+    sku varchar(255) not null,
+    quantity int not null,
+    status enum('PENDING', 'COMPLETED', 'CANCELLED') not null,
+    created_at timestamp not null default current_timestamp
+);
+
 create table store_availability (
     store_id int primary key,
     last_check timestamp not null

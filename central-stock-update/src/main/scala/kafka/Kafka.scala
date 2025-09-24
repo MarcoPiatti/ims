@@ -1,13 +1,10 @@
 package ims.central.update
 package kafka
 
-import config.{KafkaConfig, KafkaTopicConfig}
+import config.KafkaTopicConfig
 
 import cats.effect.IO
-import doobie.util.transactor.Transactor
-import fs2.Chunk
 import fs2.kafka.*
-import fs2.kafka.consumer.KafkaConsumeChunk.CommitNow
 import io.circe.Decoder
 import io.circe.derivation.Configuration
 import io.circe.parser.decode
