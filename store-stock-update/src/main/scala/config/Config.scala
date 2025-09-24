@@ -18,7 +18,8 @@ case class Sensitive(value: String) extends AnyVal {
 case class Config(store: StoreConfig,
                   heartbeat: HeartbeatConfig,
                   db: DbConfig,
-                  server: ServerConfig) derives ConfigReader
+                  server: ServerConfig,
+                  kafka: KafkaConfig) derives ConfigReader
 
 case class DbConfig(host: Host,
                     port: Port,
@@ -31,6 +32,14 @@ case class ServerConfig(port: Port, host: Host)
 case class StoreConfig(id: Int)
 
 case class HeartbeatConfig(interval: FiniteDuration)
+
+case class KafkaTopicConfig(bootstrapServers: String,
+                            topic: String,
+                            groupId: String,
+                           )
+
+case class KafkaConfig(reservations: KafkaTopicConfig,
+                       reservationResults: KafkaTopicConfig) derives ConfigReader
 
 object Config:
   def load(): Config = ConfigSource.default.loadOrThrow[Config]

@@ -5,6 +5,7 @@ import config.Config
 import db.Db
 import server.{Routes, Server}
 import service.{Heartbeat, StockUpdater}
+import kafka.reservations.ReservationStreaming
 
 import cats.effect.*
 import org.typelevel.log4cats.Logger
@@ -20,6 +21,7 @@ object Main extends IOApp.Simple:
       for transactor <- Db.transactor(config.db)
           _ <- Heartbeat.start(config.heartbeat.interval, config.store.id, transactor)
           stockUpdater = StockUpdater(config.store.id, transactor)
+          _ <- ReservationStreaming.start(config.store.id, config.kafka.reservations, config.kafka.reservationResults, stockUpdater)
           apiEndpoints = Api.endpoints(stockUpdater)
           routes = Routes.all(apiEndpoints)
           server <- Server(config.server, routes)
