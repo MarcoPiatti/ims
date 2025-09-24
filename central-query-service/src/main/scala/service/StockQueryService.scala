@@ -33,9 +33,10 @@ object StockQueryService:
         .view
         .mapValues(it => it -> isSynced(it, now, syncLimit))
         .toMap
-    yield stock.map(
-      stock =>
+    yield stock
+      .map(stock =>
         val safeQuantity = (stock.quantity - minimumStock).max(0)
         val (lastHeartbeat, isAvailable) = storeStatuses.getOrElse(stock.storeId, (Instant.EPOCH, false))
         StockResponse.of(stock.copy(quantity = safeQuantity), lastHeartbeat, isAvailable)
-    )
+      )
+      .filterNot(_.quantity == 0)

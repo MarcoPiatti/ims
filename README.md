@@ -6,7 +6,7 @@ https://github.com/MarcoPiatti/ims
 
 This repository contains a simplified protoype of a distributed Inventory Management System.
 
-It demonstrates the use of microservices architecture, event-driven communication, 
+It demonstrates the use of distributed architectures, event-driven communication, 
 and database change data capture (CDC) using Kafka and Debezium.
 
 ------
