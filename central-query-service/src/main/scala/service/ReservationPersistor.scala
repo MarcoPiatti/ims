@@ -23,7 +23,10 @@ object ReservationPersistor:
            ): ReservationPersistor = (request: ReservationRequest) =>
     val transaction = 
       for 
-        stock <- EitherT.right(Queries.singleStock(request.storeId, request.sku))
+        stock <- EitherT.fromOptionF(
+          Queries.singleStock(request.storeId, request.sku), 
+          ApiError(s"Stock not found for storeId: ${request.storeId}, sku: ${request.sku}")
+        )
         _ <- EitherT.cond[ConnectionIO](stock >= request.quantity + minimumStock, (),
           ApiError(s"Not enough stock. reservation quantity: ${request.quantity}, available stock: ${stock - minimumStock}"),
         )
@@ -31,6 +34,7 @@ object ReservationPersistor:
       yield ReservationResponse(id, PENDING)
 
     val flow = for
+      _ <- EitherT.cond[IO](request.quantity > 0, (), ApiError("Quantity must be greater than zero"))
       reservationResponse <- transaction.transact(transactor)
       _ <- EitherT.right(kafkaSender.send(
         ReservationKey(request.storeId),

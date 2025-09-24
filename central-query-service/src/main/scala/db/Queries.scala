@@ -39,8 +39,8 @@ object Queries {
       update reservations set status = ${status.toString} where id = $reservationId
     """.update.run.void
 
-  def singleStock(storeId: Int, sku: String): ConnectionIO[Int] =
-    sql"select quantity from stock where store_id = $storeId and sku = $sku".query[Int].unique
+  def singleStock(storeId: Int, sku: String): ConnectionIO[Option[Int]] =
+    sql"select quantity from stock where store_id = $storeId and sku = $sku".query[Int].option
 
   def createReservation(storeId: Int, sku: String, quantity: Int, status: ReservationStatus): ConnectionIO[Int] =
     sql"""

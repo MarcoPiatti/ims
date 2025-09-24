@@ -74,7 +74,7 @@ object ReservationStreaming:
         .records
         .evalMapChunk { committable =>
           val value = committable.record.value
-          val update = StockUpdate(value.sku, value.quantity)
+          val update = StockUpdate(value.sku, -value.quantity)
           stockUpdater(update).map { result =>
             val data = ReservationResultData(value.id, result.fold(_ => ReservationStatus.CANCELLED, _ => ReservationStatus.CONFIRMED))
             val record = ProducerRecord(outTopic, ReservationResultKey(data.id), data)
