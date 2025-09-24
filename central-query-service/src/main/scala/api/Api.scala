@@ -35,4 +35,4 @@ object Api:
       .errorOut(jsonBody[ApiError])
       .serverLogic(reservationPersistor(_))
     
-    List(getStock)
+    List(getStock, reserveStock)
